@@ -18,7 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import StreamingPlayerManager from '../../components/players/StreamingPlayerManager';
+import ClapprStreamingPlayer from '../../components/players/ClapprStreamingPlayer';
 
 interface Video {
   id: number;
@@ -1162,13 +1162,21 @@ const Playlists: React.FC = () => {
 
             {/* Player */}
             <div className="w-full h-full p-4 pt-16">
-              <StreamingPlayerManager
+              <ClapprStreamingPlayer
+                src={`https://stmv1.udicast.com/${userLogin}/${userLogin}/playlist.m3u8`}
+                title={`📺 ${selectedPlaylist?.nome || 'Transmissão'}`}
+                isLive={true}
+                autoplay={true}
+                controls={true}
                 className="w-full h-full"
-                showPlayerSelector={false}
-                enableSocialSharing={true}
-                enableViewerCounter={true}
-                enableWatermark={true}
-                autoDetectStream={true}
+                streamStats={transmissionStatus?.transmission ? {
+                  viewers: transmissionStatus.transmission.stats.viewers || 0,
+                  bitrate: transmissionStatus.transmission.stats.bitrate || 0,
+                  uptime: transmissionStatus.transmission.stats.uptime || '00:00:00',
+                  quality: '1080p'
+                } : undefined}
+                onError={(error) => console.error('Erro no player Clappr:', error)}
+                onReady={() => console.log('Player Clappr pronto')}
               />
             </div>
           </div>

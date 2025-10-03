@@ -7,7 +7,7 @@ import {
   AlertCircle, CheckCircle, Wifi, WifiOff, Server, HardDrive, RefreshCw
 } from 'lucide-react';
 import { toast } from 'react-toastify';
-import IFrameVideoPlayer from '../../components/IFrameVideoPlayer';
+import ClapprStreamingPlayer from '../../components/players/ClapprStreamingPlayer';
 import StreamingControlInline from '../../components/StreamingControlInline';
 
 interface DashboardStats {
@@ -533,19 +533,26 @@ const Dashboard: React.FC = () => {
 
             <div className="aspect-video bg-gray-900 rounded-xl overflow-hidden">
               {streamStatus?.is_live ? (
-                <IFrameVideoPlayer
-                  src={currentVideoUrl}
+                <ClapprStreamingPlayer
+                  src={`https://stmv1.udicast.com/${userLogin}/${userLogin}/playlist.m3u8`}
                   title={playlistName || 'Transmissão'}
                   isLive={true}
-                  autoplay={false}
+                  autoplay={true}
                   controls={true}
                   className="w-full h-full"
+                  streamStats={{
+                    viewers: streamStatus.transmission?.stats.viewers || streamStatus.obs_stream?.viewers || 0,
+                    bitrate: streamStatus.transmission?.stats.bitrate || streamStatus.obs_stream?.bitrate || 0,
+                    uptime: streamStatus.transmission?.stats.uptime || streamStatus.obs_stream?.uptime || '00:00:00',
+                    quality: '1080p',
+                    isRecording: streamStatus.obs_stream?.recording || false
+                  }}
                   onError={(error) => {
                     console.error('Erro no player do dashboard:', error);
                     setPlayerError('Erro ao carregar player');
                   }}
                   onReady={() => {
-                    console.log('Player do dashboard pronto');
+                    console.log('Player Clappr do dashboard pronto');
                     setPlayerError(null);
                   }}
                 />

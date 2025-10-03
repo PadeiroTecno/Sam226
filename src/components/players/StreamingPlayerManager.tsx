@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import IFrameVideoPlayer from '../IFrameVideoPlayer';
+import ClapprStreamingPlayer from './ClapprStreamingPlayer';
 import { Play, Settings, Eye, Share2, Download, Zap, Monitor, Activity, Radio, Wifi, WifiOff, AlertCircle, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react';
 
 interface StreamingPlayerManagerProps {
@@ -171,21 +171,14 @@ const StreamingPlayerManager: React.FC<StreamingPlayerManagerProps> = ({
   };
 
   const renderPlayer = () => {
-    // Usar IFrame player simples para evitar problemas de DOM
+    // Usar Clappr player para HLS streams
     if (currentStreamUrl) {
-      // Construir URL do player na porta do sistema
-      const baseUrl = process.env.NODE_ENV === 'production' 
-        ? 'http://samhost.wcore.com.br:3001'
-        : 'http://localhost:3001';
-      
-      const iframeUrl = `${baseUrl}/api/player-port/iframe?stream=${userLogin}_live&player=1&contador=true&compartilhamento=true`;
-      
       return (
-        <IFrameVideoPlayer
-          src={iframeUrl}
+        <ClapprStreamingPlayer
+          src={currentStreamUrl}
           title={streamTitle}
           isLive={streamStatus?.is_live || false}
-          autoplay={false}
+          autoplay={true}
           controls={true}
           className="w-full h-full"
           streamStats={streamStatus?.is_live ? {
@@ -195,12 +188,12 @@ const StreamingPlayerManager: React.FC<StreamingPlayerManagerProps> = ({
             quality: '1080p',
             isRecording: streamStatus.obs_stream?.recording || false
           } : undefined}
-          onReady={() => console.log('IFrame player pronto')}
-          onError={(error: any) => console.error('Erro no IFrame player:', error)}
+          onReady={() => console.log('Clappr player pronto')}
+          onError={(error: any) => console.error('Erro no Clappr player:', error)}
         />
       );
     }
-    
+
     return (
       <div className="w-full h-full flex items-center justify-center text-white">
         <div className="text-center">
